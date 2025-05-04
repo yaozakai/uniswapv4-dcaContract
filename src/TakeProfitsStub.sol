@@ -5,13 +5,16 @@ import {TakeProfitsHook} from "./TakeProfitsHook.sol";
 
 import {BaseHook} from "v4-periphery/src/utils/BaseHook.sol";
 import {IPoolManager} from "v4-periphery/lib/v4-core/src/PoolManager.sol";
-import {Hooks} from "v4-periphery/lib/v4-core/src/libraries/Hooks.sol";
+import {Hooks} from "v4-core/libraries/Hooks.sol";
 
 contract TakeProfitsStub is TakeProfitsHook {
     constructor(
         IPoolManager _poolManager,
         TakeProfitsHook addressToEtch
-    ) TakeProfitsHook(_poolManager, "") {}
+    ) TakeProfitsHook(_poolManager, "") {
+        // Properly initialize the parent contract
+        // poolManager = _poolManager;
+    }
 
     // make this a no-op in testing
     function _validateHookAddress(BaseHook _this) internal pure override {}

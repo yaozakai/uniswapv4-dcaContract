@@ -164,15 +164,17 @@ abstract contract BaseHook is IHooks, ImmutableState {
         IPoolManager.SwapParams calldata params,
         BalanceDelta delta,
         bytes calldata hookData
-    ) external onlyPoolManager returns (bytes4, int128) {
+    ) external virtual onlyPoolManager returns (bytes4, int128) {
         return _afterSwap(sender, key, params, delta, hookData);
     }
 
-    function _afterSwap(address, PoolKey calldata, IPoolManager.SwapParams calldata, BalanceDelta, bytes calldata)
-        internal
-        virtual
-        returns (bytes4, int128)
-    {
+    function _afterSwap(
+        address,
+        PoolKey calldata,
+        IPoolManager.SwapParams calldata,
+        BalanceDelta,
+        bytes calldata
+    ) internal virtual returns (bytes4, int128) {
         revert HookNotImplemented();
     }
 

@@ -23,16 +23,16 @@ using FixedPointMathLib for uint256;
 
 using StateLibrary for IPoolManager;
 
-// Define MIN_SQRT_RATIO and MAX_SQRT_RATIO if not available in TickMath
-uint160 constant MIN_SQRT_RATIO = 4295128739;
-uint160 constant MAX_SQRT_RATIO = 1461446703485210103287273052203988822378723970342;
-
 // Use the PoolIdLibrary for PoolKey to add the `.toId()` function on a PoolKey
 // which hashes the PoolKey struct into a bytes32 value
 
 contract TakeProfitsHook is BaseHook, ERC1155 {
     using PoolIdLibrary for PoolKey;
     using CurrencyLibrary for Currency;
+
+    // Define MIN_SQRT_RATIO and MAX_SQRT_RATIO as constants
+    uint160 private constant _minSqrtRatio = 4295128739;
+    uint160 private constant _maxSqrtRatio = 1461446703485210103287273052203988822378723970342;
 
     // Create a mapping to store the last known tickLower value for a given Pool
     mapping(PoolId poolId => int24 tickLower) public tickLowerLasts;
@@ -314,8 +314,8 @@ contract TakeProfitsHook is BaseHook, ERC1155 {
             // or the maximum possible if swapping from Token 1 to Token 0
             // i.e. infinite slippage allowed
             sqrtPriceLimitX96: zeroForOne
-                ? MIN_SQRT_RATIO + 1 // Updated to use defined constant
-                : MAX_SQRT_RATIO - 1 // Updated to use defined constant
+                ? _minSqrtRatio + 1 // Updated to use defined constant
+                : _maxSqrtRatio - 1 // Updated to use defined constant
         });
 
         BalanceDelta delta = _handleSwap(key, swapParams);

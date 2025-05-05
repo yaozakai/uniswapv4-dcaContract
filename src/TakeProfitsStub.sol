@@ -3,8 +3,8 @@ pragma solidity ^0.8.24;
 
 import {TakeProfitsHook} from "./TakeProfitsHook.sol";
 
-import {BaseHook} from "v4-periphery/src/utils/BaseHook.sol";
-import {IPoolManager} from "v4-periphery/lib/v4-core/src/PoolManager.sol";
+import {BaseHook} from "lib/v4-periphery/src/utils/BaseHook.sol";
+import {IPoolManager} from "v4-core/interfaces/IPoolManager.sol";
 import {Hooks} from "v4-core/libraries/Hooks.sol";
 
 contract TakeProfitsStub is TakeProfitsHook {

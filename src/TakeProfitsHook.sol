@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.26;
 
-import {BaseHook} from "v4-periphery/src/utils/BaseHook.sol";
-import {ERC1155} from "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import {BaseHook} from "lib/v4-periphery/src/utils/BaseHook.sol";
+import {ERC1155} from "openzeppelin-contracts/contracts/token/ERC1155/ERC1155.sol";
 import {IPoolManager} from "v4-core/interfaces/IPoolManager.sol";
 import {Hooks} from "v4-core/libraries/Hooks.sol";
 
@@ -11,7 +11,7 @@ import {PoolKey} from "v4-core/types/PoolKey.sol";
 
 import {Currency, CurrencyLibrary} from "v4-core/types/Currency.sol";
 
-import {IERC20} from "v4-periphery/lib/v4-core/lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import {IERC20} from "openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 import {TickMath} from "v4-core/libraries/TickMath.sol";
 import {BalanceDelta} from "v4-core/types/BalanceDelta.sol";
@@ -109,32 +109,25 @@ contract TakeProfitsHook is BaseHook, ERC1155 {
     
 
     function afterSwap(
-        address addr,
+        address sender,
         PoolKey calldata key,
         IPoolManager.SwapParams calldata params,
-        BalanceDelta,
-        bytes calldata
-    ) external virtual override poolManagerOnly returns (bytes4, int128) {
-        
-        // Every time we fulfill an order, we do a swap
-        // So it creates an `afterSwap` call back to ourselves
-        // This opens us up for re-entrancy attacks
-        // So if we detect we are calling ourselves, we return early and don't try to fulfill any orders
-        if (addr == address(this)) {
+        BalanceDelta delta,
+        bytes calldata hookData
+    ) external override poolManagerOnly returns (bytes4, int128) {
+        // Custom logic for afterSwap
+        if (sender == address(this)) {
             return (TakeProfitsHook.afterSwap.selector, 0);
         }
 
         bool attemptToFillMoreOrders = true;
         int24 currentTickLower;
 
-        // While we have any possibility of having orders left to fulfill
         while (attemptToFillMoreOrders) {
-            // Try fulfilling orders
             (attemptToFillMoreOrders, currentTickLower) = _tryFulfillingOrders(
                 key,
                 params
             );
-            // Update `tickLowerLasts` to have the value of `currentTickLower` after the last iteration
             tickLowerLasts[key.toId()] = currentTickLower;
         }
 
